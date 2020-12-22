@@ -1,0 +1,115 @@
+---
+title: "Tweet analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+##################################################### Load the necessary libraries ###################################################
+
+library(gutenbergr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(tidytext)
+library(ggplot2)
+library(SnowballC)
+library(wordcloud)
+library(tm)
+library(topicmodels)
+```
+
+```{r}
+################################################### Data cleaning and preparation ####################################################
+
+# Load the data
+tweet = read.csv('C:/Users/34527/Desktop/Case compete/Summer Data Competition/vaccine_tweet.csv')
+
+# Take a glance at the data
+summary(tweet)
+head(tweet, 20)
+
+# Drop the column that is not necessary
+to_drop = c('UserName')
+tweet = tweet[,colnames(tweet)!= to_drop]
+
+# Check if there is any missing data
+sum(tweet[,'Text'] == '')
+sum(is.null(tweet[,'Text']))
+sum(is.na(tweet[,'Text']))
+```
+
+```{r}
+######################################################### Data visualization #########################################################
+
+# Unnest the tokens in each Tweet and group them by Timestamp column
+tidy_tweet = tweet %>% select(Timestamp, Text) %>% unnest_tokens('word', Text)
+
+# Remove stop words
+tidy_tweet = tidy_tweet %>% anti_join(stop_words)
+
+# Remove numbers
+tidy_tweet = tidy_tweet[-grep("\\b\\d+\\b", tidy_tweet$word),]
+
+# Remove spaces
+tidy_tweet$word = gsub('\\s+', '', tidy_tweet$word)
+
+# Stemming, the process in which all the words are reduced to its most basic form. For example, 'producing' is reduced to 'produce'
+tidy_tweet = tidy_tweet %>% mutate_at('word', funs(wordStem((.), language = 'en')))
+```
+
+```{r}
+tidy_tweet = tidy_tweet %>% filter(!(word == 'â' | word == 'https' | word == 'à' | word == 'http' | word == 'ð' | word == 'vaccine' | word == 'covid' | word == 'coronavirus' | word == 'vaccin' | word == 'covid19'))
+```
+
+```{r}
+# Create a document-term matrix (DTM) and inspect the previous five elements
+tidy_tweetDTM = tidy_tweet %>% count(Timestamp, word) %>% cast_dtm(Timestamp, word, n)
+inspect(tidy_tweetDTM[1:5, 1:5])
+```
+
+```{r}
+# Manually remove the words that do not add insigts to the analysis
+top_word = tidy_tweet %>% count(word) %>% arrange(desc(n))
+```
+
+```{r}
+# Extract and visualize the top 30 words based on the number of times they are mentioned
+top_word %>% slice(1:30) %>% ggplot(aes(x = reorder(word, -n), y = n, fill = word)) + geom_bar(stat = 'identity') + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 13)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Frequency') + xlab('') + ggtitle('Top 30 Words in COVID vaccine Related Tweets') + guides(fill = FALSE)
+```
+
+```{r}
+# Visualize the words using word cloud
+wordcloud(top_word$word, top_word$n, random.order = FALSE, rot.per = 0.2, scale = c(4, 1), max.words = 50, random.color = TRUE, colors = brewer.pal(11, 'Dark2'))
+```
+
+```{r}
+######################################################### Sentiment Analysis #########################################################
+
+tidy_tweet_sentiment = tidy_tweet %>% inner_join(get_sentiments('bing')) %>% count(Timestamp, sentiment)
+tidy_tweet_sentiment$Timestamp = substr(tidy_tweet_sentiment$Timestamp, 1, 10)
+tidy_tweet_sentiment$Timestamp = as.Date(tidy_tweet_sentiment$Timestamp, format = '%Y-%m-%d')
+```
+
+```{r}
+# Count of 
+tidy_tweet_sentiment %>% filter(sentiment == 'negative') %>% ggplot(aes(x = Timestamp, y = n)) + geom_bar(stat = 'identity', color = 'red', width = 0.7) + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Number of words') + xlab('Date') + ggtitle('Count of Negative Sentiment Words') + theme(aspect.ratio = 1/4)
+```
+
+```{r}
+tidy_tweet_sentiment %>% filter(sentiment == 'positive') %>% ggplot(aes(x = Timestamp, y = n)) + geom_bar(stat = 'identity', color = 'green', width = 0.7) + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Number of words') + xlab('Date') + ggtitle('Count of Negative Sentiment Words') + theme(aspect.ratio = 1/4)
+```
+
+```{r}
+############################################################ Topic Model #############################################################
+
+tweet_topic_model = LDA(tidy_tweetDTM, k = 4, control = list(seed = 123))
+tweet_topics = tidy(tweet_topic_model, matrix = 'beta')
+top_terms = tweet_topics %>% group_by(topic) %>% top_n(10, beta) %>% ungroup() %>% arrange (topic, -beta)
+
+top_terms %>% mutate(term = reorder(term, beta)) %>% mutate(topic = paste('Topic #', topic)) %>% ggplot(aes(term, beta, fill = factor(topic))) + geom_col(show.legend = FALSE) + facet_wrap(~topic, scales = 'free') + theme_minimal() + theme(plot.title = element_text(hjust = 0.5, size = 18)) + labs(title = 'Topic Model of Tweet Words', caption = 'Top Terms by Topic (betas)') + ylab('') + xlab('') + coord_flip()
+```
+
