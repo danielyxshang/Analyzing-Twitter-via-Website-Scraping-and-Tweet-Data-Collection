@@ -1,0 +1,448 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Tweet analysis},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Tweet analysis}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+-------------------------------------------------- Load the necessary
+libraries -----------------------------------------------------
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(gutenbergr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'gutenbergr' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyr)}
+\KeywordTok{library}\NormalTok{(stringr)}
+\KeywordTok{library}\NormalTok{(tidytext)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'tidytext' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{library}\NormalTok{(SnowballC)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'SnowballC' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(wordcloud)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'wordcloud' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: RColorBrewer
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'tm' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: NLP
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'NLP' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'NLP'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:ggplot2':
+## 
+##     annotate
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(topicmodels)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'topicmodels' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(latexpdf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'latexpdf' was built under R version 4.0.3
+\end{verbatim}
+
+------------------------------------------------ Data cleaning and
+preparation -----------------------------------------------------
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load the data}
+\NormalTok{tweet =}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{'C:/Users/34527/Desktop/vaccine_tweet.csv'}\NormalTok{)}
+
+\CommentTok{# Take a glance at the data}
+\KeywordTok{summary}\NormalTok{(tweet)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    UserName            Handle           Timestamp             Text          
+##  Length:50006       Length:50006       Length:50006       Length:50006      
+##  Class :character   Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+##    Comments            Likes             Retweets        
+##  Length:50006       Length:50006       Length:50006      
+##  Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Drop the column that is not necessary}
+\NormalTok{to_drop =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'UserName'}\NormalTok{)}
+\NormalTok{tweet =}\StringTok{ }\NormalTok{tweet[,}\KeywordTok{colnames}\NormalTok{(tweet)}\OperatorTok{!=}\StringTok{ }\NormalTok{to_drop]}
+
+\CommentTok{# Check if there is any missing data}
+\KeywordTok{sum}\NormalTok{(tweet[,}\StringTok{'Text'}\NormalTok{] }\OperatorTok{==}\StringTok{ ''}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sum}\NormalTok{(}\KeywordTok{is.null}\NormalTok{(tweet[,}\StringTok{'Text'}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sum}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(tweet[,}\StringTok{'Text'}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+----------------------------------------------------- Data visualization
+---------------------------------------------------------
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Unnest the tokens in each Tweet and group them by Timestamp column}
+\NormalTok{tidy_tweet =}\StringTok{ }\NormalTok{tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(Timestamp, Text) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{unnest_tokens}\NormalTok{(}\StringTok{'word'}\NormalTok{, Text)}
+
+\CommentTok{# Remove stop words}
+\NormalTok{tidy_tweet =}\StringTok{ }\NormalTok{tidy_tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{anti_join}\NormalTok{(stop_words)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "word"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Remove numbers}
+\NormalTok{tidy_tweet =}\StringTok{ }\NormalTok{tidy_tweet[}\OperatorTok{-}\KeywordTok{grep}\NormalTok{(}\StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{b}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{d+}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{b"}\NormalTok{, tidy_tweet}\OperatorTok{$}\NormalTok{word),]}
+
+\CommentTok{# Remove spaces}
+\NormalTok{tidy_tweet}\OperatorTok{$}\NormalTok{word =}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{'}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{s+'}\NormalTok{, }\StringTok{''}\NormalTok{, tidy_tweet}\OperatorTok{$}\NormalTok{word)}
+
+\CommentTok{# Stemming, the process in which all the words are reduced to its most basic form. For example, 'producing' is reduced to 'produce'}
+\NormalTok{tidy_tweet =}\StringTok{ }\NormalTok{tidy_tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate_at}\NormalTok{(}\StringTok{'word'}\NormalTok{, }\KeywordTok{funs}\NormalTok{(}\KeywordTok{wordStem}\NormalTok{((.), }\DataTypeTok{language =} \StringTok{'en'}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: `funs()` is deprecated as of dplyr 0.8.0.
+## Please use a list of either functions or lambdas: 
+## 
+##   # Simple named list: 
+##   list(mean = mean, median = median)
+## 
+##   # Auto named with `tibble::lst()`: 
+##   tibble::lst(mean, median)
+## 
+##   # Using lambdas
+##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tidy_tweet =}\StringTok{ }\NormalTok{tidy_tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\NormalTok{(word }\OperatorTok{==}\StringTok{ 'â'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'https'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'à'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'http'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'ð'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'vaccine'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'covid'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'coronavirus'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'vaccin'} \OperatorTok{|}\StringTok{ }\NormalTok{word }\OperatorTok{==}\StringTok{ 'covid19'}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create a document-term matrix (DTM) and inspect the previous five elements}
+\NormalTok{tidy_tweetDTM =}\StringTok{ }\NormalTok{tidy_tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(Timestamp, word) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{cast_dtm}\NormalTok{(Timestamp, word, n)}
+\KeywordTok{inspect}\NormalTok{(tidy_tweetDTM[}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## <<DocumentTermMatrix (documents: 5, terms: 5)>>
+## Non-/sparse entries: 7/18
+## Sparsity           : 72%
+## Maximal term length: 7
+## Weighting          : term frequency (tf)
+## Sample             :
+##                           Terms
+## Docs                       bid biggest china control countri
+##   2020-10-09T20:47:16.000Z   1       1     5       1       1
+##   2020-10-09T20:47:22.000Z   0       0     3       0       1
+##   2020-10-09T20:47:25.000Z   0       0     0       0       0
+##   2020-10-09T20:47:51.000Z   0       0     0       0       0
+##   2020-10-09T20:48:00.000Z   0       0     0       0       0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Manually remove the words that do not add insigts to the analysis}
+\NormalTok{top_word =}\StringTok{ }\NormalTok{tidy_tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(word) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(n))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Extract and visualize the top 30 words based on the number of times they are mentioned}
+\NormalTok{top_word }\OperatorTok{%>%}\StringTok{ }\KeywordTok{slice}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{30}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{reorder}\NormalTok{(word, }\OperatorTok{-}\NormalTok{n), }\DataTypeTok{y =}\NormalTok{ n, }\DataTypeTok{fill =}\NormalTok{ word)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_minimal}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{60}\NormalTok{, }\DataTypeTok{hjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{size =} \DecValTok{13}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{size =} \DecValTok{18}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{'Frequency'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{''}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{'Top 30 Words in COVID vaccine Related Tweets'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Tweet-analysis_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Visualize the words using word cloud}
+\KeywordTok{wordcloud}\NormalTok{(top_word}\OperatorTok{$}\NormalTok{word, top_word}\OperatorTok{$}\NormalTok{n, }\DataTypeTok{random.order =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{rot.per =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{scale =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }\DataTypeTok{max.words =} \DecValTok{50}\NormalTok{, }\DataTypeTok{random.color =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{colors =} \KeywordTok{brewer.pal}\NormalTok{(}\DecValTok{11}\NormalTok{, }\StringTok{'Dark2'}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in brewer.pal(11, "Dark2"): n too large, allowed maximum for palette Dark2 is 8
+## Returning the palette you asked for with that many colors
+\end{verbatim}
+
+\includegraphics{Tweet-analysis_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+------------------------------------------------------- Sentiment
+Analysis ---------------------------------------------------------
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tidy_tweet_sentiment =}\StringTok{ }\NormalTok{tidy_tweet }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(}\KeywordTok{get_sentiments}\NormalTok{(}\StringTok{'bing'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(Timestamp, sentiment)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = "word"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tidy_tweet_sentiment}\OperatorTok{$}\NormalTok{Timestamp =}\StringTok{ }\KeywordTok{substr}\NormalTok{(tidy_tweet_sentiment}\OperatorTok{$}\NormalTok{Timestamp, }\DecValTok{1}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\NormalTok{tidy_tweet_sentiment}\OperatorTok{$}\NormalTok{Timestamp =}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(tidy_tweet_sentiment}\OperatorTok{$}\NormalTok{Timestamp, }\DataTypeTok{format =} \StringTok{'%Y-%m-%d'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Count of }
+\NormalTok{tidy_tweet_sentiment }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(sentiment }\OperatorTok{==}\StringTok{ 'negative'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Timestamp, }\DataTypeTok{y =}\NormalTok{ n)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{color =} \StringTok{'red'}\NormalTok{, }\DataTypeTok{width =} \FloatTok{0.7}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_minimal}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{60}\NormalTok{, }\DataTypeTok{hjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{size =} \DecValTok{10}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{size =} \DecValTok{18}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{'Number of words'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{'Date'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{'Count of Negative Sentiment Words'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{aspect.ratio =} \DecValTok{1}\OperatorTok{/}\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Tweet-analysis_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tidy_tweet_sentiment }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(sentiment }\OperatorTok{==}\StringTok{ 'positive'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Timestamp, }\DataTypeTok{y =}\NormalTok{ n)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{color =} \StringTok{'green'}\NormalTok{, }\DataTypeTok{width =} \FloatTok{0.7}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_minimal}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{60}\NormalTok{, }\DataTypeTok{hjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{size =} \DecValTok{10}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{size =} \DecValTok{18}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{'Number of words'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{'Date'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{'Count of Negative Sentiment Words'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{aspect.ratio =} \DecValTok{1}\OperatorTok{/}\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Tweet-analysis_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+-------------------------------------------------------- Topic Model
+--------------------------------------------------------------
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tweet_topic_model =}\StringTok{ }\KeywordTok{LDA}\NormalTok{(tidy_tweetDTM, }\DataTypeTok{k =} \DecValTok{4}\NormalTok{, }\DataTypeTok{control =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{seed =} \DecValTok{123}\NormalTok{))}
+\NormalTok{tweet_topics =}\StringTok{ }\KeywordTok{tidy}\NormalTok{(tweet_topic_model, }\DataTypeTok{matrix =} \StringTok{'beta'}\NormalTok{)}
+\NormalTok{top_terms =}\StringTok{ }\NormalTok{tweet_topics }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(topic) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{top_n}\NormalTok{(}\DecValTok{10}\NormalTok{, beta) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{ (topic, }\OperatorTok{-}\NormalTok{beta)}
+
+\NormalTok{top_terms }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{term =} \KeywordTok{reorder}\NormalTok{(term, beta)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{topic =} \KeywordTok{paste}\NormalTok{(}\StringTok{'Topic #'}\NormalTok{, topic)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(term, beta, }\DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(topic))) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_col}\NormalTok{(}\DataTypeTok{show.legend =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{topic, }\DataTypeTok{scales =} \StringTok{'free'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_minimal}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{size =} \DecValTok{18}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Topic Model of Tweet Words'}\NormalTok{, }\DataTypeTok{caption =} \StringTok{'Top Terms by Topic (betas)'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{''}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{''}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_flip}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Tweet-analysis_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\end{document}
