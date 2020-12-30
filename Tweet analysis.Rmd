@@ -7,9 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+-------------------------------------------------- Load the necessary libraries -----------------------------------------------------
 ```{r}
-##################################################### Load the necessary libraries ###################################################
-
 library(gutenbergr)
 library(dplyr)
 library(tidyr)
@@ -22,15 +21,13 @@ library(tm)
 library(topicmodels)
 ```
 
+------------------------------------------------ Data cleaning and preparation -----------------------------------------------------
 ```{r}
-################################################### Data cleaning and preparation ####################################################
-
 # Load the data
-tweet = read.csv('C:/Users/34527/Desktop/Case compete/Summer Data Competition/vaccine_tweet.csv')
+tweet = read.csv('C:/Users/34527/Desktop/vaccine_tweet.csv')
 
 # Take a glance at the data
 summary(tweet)
-head(tweet, 20)
 
 # Drop the column that is not necessary
 to_drop = c('UserName')
@@ -42,9 +39,8 @@ sum(is.null(tweet[,'Text']))
 sum(is.na(tweet[,'Text']))
 ```
 
+----------------------------------------------------- Data visualization ---------------------------------------------------------
 ```{r}
-######################################################### Data visualization #########################################################
-
 # Unnest the tokens in each Tweet and group them by Timestamp column
 tidy_tweet = tweet %>% select(Timestamp, Text) %>% unnest_tokens('word', Text)
 
@@ -86,9 +82,8 @@ top_word %>% slice(1:30) %>% ggplot(aes(x = reorder(word, -n), y = n, fill = wor
 wordcloud(top_word$word, top_word$n, random.order = FALSE, rot.per = 0.2, scale = c(4, 1), max.words = 50, random.color = TRUE, colors = brewer.pal(11, 'Dark2'))
 ```
 
+------------------------------------------------------- Sentiment Analysis ---------------------------------------------------------
 ```{r}
-######################################################### Sentiment Analysis #########################################################
-
 tidy_tweet_sentiment = tidy_tweet %>% inner_join(get_sentiments('bing')) %>% count(Timestamp, sentiment)
 tidy_tweet_sentiment$Timestamp = substr(tidy_tweet_sentiment$Timestamp, 1, 10)
 tidy_tweet_sentiment$Timestamp = as.Date(tidy_tweet_sentiment$Timestamp, format = '%Y-%m-%d')
@@ -103,8 +98,9 @@ tidy_tweet_sentiment %>% filter(sentiment == 'negative') %>% ggplot(aes(x = Time
 tidy_tweet_sentiment %>% filter(sentiment == 'positive') %>% ggplot(aes(x = Timestamp, y = n)) + geom_bar(stat = 'identity', color = 'green', width = 0.7) + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Number of words') + xlab('Date') + ggtitle('Count of Negative Sentiment Words') + theme(aspect.ratio = 1/4)
 ```
 
+-------------------------------------------------------- Topic Model --------------------------------------------------------------
 ```{r}
-############################################################ Topic Model #############################################################
+
 
 tweet_topic_model = LDA(tidy_tweetDTM, k = 4, control = list(seed = 123))
 tweet_topics = tidy(tweet_topic_model, matrix = 'beta')
