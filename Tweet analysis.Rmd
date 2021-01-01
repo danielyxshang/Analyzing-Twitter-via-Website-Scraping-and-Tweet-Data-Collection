@@ -1,7 +1,7 @@
 ---
 title: "Tweet analysis"
-output:
-  pdf_document: default
+author: "Daniel Shang"
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -55,12 +55,16 @@ tidy_tweet = tidy_tweet[-grep("\\b\\d+\\b", tidy_tweet$word),]
 # Remove spaces
 tidy_tweet$word = gsub('\\s+', '', tidy_tweet$word)
 
-# Stemming, the process in which all the words are reduced to its most basic form. For example, 'producing' is reduced to 'produce'
+# Stemming, the process in which all the words are reduced to its most basic form. For
+## example, 'producing' is reduced to 'produce'
 tidy_tweet = tidy_tweet %>% mutate_at('word', funs(wordStem((.), language = 'en')))
 ```
 
 ```{r}
-tidy_tweet = tidy_tweet %>% filter(!(word == 'â' | word == 'https' | word == 'à' | word == 'http' | word == 'ð' | word == 'vaccine' | word == 'covid' | word == 'coronavirus' | word == 'vaccin' | word == 'covid19'))
+# Manually remove the words that would not help with the analysis
+tidy_tweet = tidy_tweet %>% filter(!(word == 'â' | word == 'https' | word == 'à' |
+    word == 'http' | word == 'ð' | word == 'vaccine' | word == 'covid' |
+    word == 'coronavirus' | word == 'vaccin' | word == 'covid19'))
 ```
 
 ```{r}
@@ -76,38 +80,85 @@ top_word = tidy_tweet %>% count(word) %>% arrange(desc(n))
 
 ```{r}
 # Extract and visualize the top 30 words based on the number of times they are mentioned
-top_word %>% slice(1:30) %>% ggplot(aes(x = reorder(word, -n), y = n, fill = word)) + geom_bar(stat = 'identity') + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 13)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Frequency') + xlab('') + ggtitle('Top 30 Words in COVID vaccine Related Tweets') + guides(fill = FALSE)
+top_word %>% slice(1:30) %>% ggplot(aes(x = reorder(word, -n), y = n, fill = word)) +
+  geom_bar(stat = 'identity') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 13)) +
+  theme(plot.title = element_text(hjust = 0.5, size = 18)) +
+  ylab('Frequency') +
+  xlab('') +
+  ggtitle('Top 30 Words in COVID vaccine Related Tweets') + guides(fill = FALSE)
 ```
 
 ```{r}
 # Visualize the words using word cloud
-wordcloud(top_word$word, top_word$n, random.order = FALSE, rot.per = 0.2, scale = c(4, 1), max.words = 50, random.color = TRUE, colors = brewer.pal(11, 'Dark2'))
+wordcloud(top_word$word, top_word$n, random.order = FALSE, rot.per = 0.2, scale = c(4, 1),
+          max.words = 50, random.color = TRUE, colors = brewer.pal(11, 'Dark2'))
 ```
 
-------------------------------------------------------- Sentiment Analysis ---------------------------------------------------------
+-------------------------------------------------------- Sentiment Analysis ---------------------------------------------------------
 ```{r}
-tidy_tweet_sentiment = tidy_tweet %>% inner_join(get_sentiments('bing')) %>% count(Timestamp, sentiment)
+# Use the function in tidytext package to determine the sentiment of words in each tweet.
+## Then, count the number of positive and negative words in each tweet.
+tidy_tweet_sentiment = tidy_tweet %>% inner_join(get_sentiments('bing')) %>%
+  count(Timestamp, sentiment)
+
 tidy_tweet_sentiment$Timestamp = substr(tidy_tweet_sentiment$Timestamp, 1, 10)
-tidy_tweet_sentiment$Timestamp = as.Date(tidy_tweet_sentiment$Timestamp, format = '%Y-%m-%d')
+
+tidy_tweet_sentiment$Timestamp =
+  as.Date(tidy_tweet_sentiment$Timestamp, format = '%Y-%m-%d')
 ```
 
 ```{r}
-# Count of 
-tidy_tweet_sentiment %>% filter(sentiment == 'negative') %>% ggplot(aes(x = Timestamp, y = n)) + geom_bar(stat = 'identity', color = 'red', width = 0.7) + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Number of words') + xlab('Date') + ggtitle('Count of Negative Sentiment Words') + theme(aspect.ratio = 1/4)
+# Count the number of negative words for each day over the period of which the data
+## covered
+tidy_tweet_sentiment %>% filter(sentiment == 'negative') %>%
+  ggplot(aes(x = Timestamp, y = n)) +
+  geom_bar(stat = 'identity', color = 'red', width = 0.7) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) +
+  theme(plot.title = element_text(hjust = 0.5, size = 18)) +
+  ylab('Number of words') +
+  xlab('Date') +
+  ggtitle('Count of Negative Sentiment Words') +
+  theme(aspect.ratio = 1/4)
 ```
 
 ```{r}
-tidy_tweet_sentiment %>% filter(sentiment == 'positive') %>% ggplot(aes(x = Timestamp, y = n)) + geom_bar(stat = 'identity', color = 'green', width = 0.7) + theme_minimal() + theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) + theme(plot.title = element_text(hjust = 0.5, size = 18)) + ylab('Number of words') + xlab('Date') + ggtitle('Count of Negative Sentiment Words') + theme(aspect.ratio = 1/4)
+# Count the number of positive words for each day over the period of which the data
+## covered
+tidy_tweet_sentiment %>% filter(sentiment == 'positive') %>%
+  ggplot(aes(x = Timestamp, y = n)) +
+  geom_bar(stat = 'identity', color = 'green', width = 0.7) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 10)) +
+  theme(plot.title = element_text(hjust = 0.5, size = 18)) +
+  ylab('Number of words') +
+  xlab('Date') +
+  ggtitle('Count of positive Sentiment Words') +
+  theme(aspect.ratio = 1/4)
 ```
 
 -------------------------------------------------------- Topic Model --------------------------------------------------------------
 ```{r}
-
-
+# After several tries, I found that, when I set the number of topics to four, the
+## words that falls under each made the most sense. Therefore, I am showing the top
+## ten words ranked by the matrics 'beta' that falls under each topic.
 tweet_topic_model = LDA(tidy_tweetDTM, k = 4, control = list(seed = 123))
 tweet_topics = tidy(tweet_topic_model, matrix = 'beta')
-top_terms = tweet_topics %>% group_by(topic) %>% top_n(10, beta) %>% ungroup() %>% arrange (topic, -beta)
+top_terms = tweet_topics %>% group_by(topic) %>% top_n(10, beta) %>% ungroup() %>%
+  arrange (topic, -beta)
 
-top_terms %>% mutate(term = reorder(term, beta)) %>% mutate(topic = paste('Topic #', topic)) %>% ggplot(aes(term, beta, fill = factor(topic))) + geom_col(show.legend = FALSE) + facet_wrap(~topic, scales = 'free') + theme_minimal() + theme(plot.title = element_text(hjust = 0.5, size = 18)) + labs(title = 'Topic Model of Tweet Words', caption = 'Top Terms by Topic (betas)') + ylab('') + xlab('') + coord_flip()
+top_terms %>% mutate(term = reorder(term, beta)) %>%
+  mutate(topic = paste('Topic #', topic)) %>%
+  ggplot(aes(term, beta, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~topic, scales = 'free') +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 18)) +
+  labs(title = 'Topic Model of Tweet Words', caption = 'Top Terms by Topic (betas)') +
+  ylab('') +
+  xlab('') +
+  coord_flip()
 ```
 
